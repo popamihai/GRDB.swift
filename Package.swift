@@ -4,18 +4,6 @@
 import Foundation
 import PackageDescription
 
-// Don't rely on those environment variables. They are ONLY testing conveniences:
-// $ SQLITE_ENABLE_FTS5=1 SQLITE_ENABLE_PREUPDATE_HOOK=1 make test_SPM
-var swiftSettings: [SwiftSetting] = []
-var cSettings: [CSetting] = []
-if ProcessInfo.processInfo.environment["SQLITE_ENABLE_FTS5"] == "1" {
-    swiftSettings.append(.define("SQLITE_ENABLE_FTS5"))
-}
-if ProcessInfo.processInfo.environment["SQLITE_ENABLE_PREUPDATE_HOOK"] == "1" {
-    swiftSettings.append(.define("SQLITE_ENABLE_PREUPDATE_HOOK"))
-    cSettings.append(.define("GRDB_SQLITE_ENABLE_PREUPDATE_HOOK"))
-}
-
 let package = Package(
     name: "GRDB",
     defaultLocalization: "en", // for tests
@@ -39,8 +27,12 @@ let package = Package(
             name: "GRDB",
             dependencies: ["CSQLite"],
             path: "GRDB",
-            cSettings: cSettings,
-            swiftSettings: swiftSettings),
+            cSettings: [
+                .define("GRDB_SQLITE_ENABLE_PREUPDATE_HOOK")
+            ],
+            swiftSettings: [
+                .define("SQLITE_ENABLE_FTS5")
+            ]),
         .testTarget(
             name: "GRDBTests",
             dependencies: ["GRDB"],
@@ -60,8 +52,12 @@ let package = Package(
                 .copy("GRDBTests/Betty.jpeg"),
                 .copy("GRDBTests/InflectionsTests.json"),
             ],
-            cSettings: cSettings,
-            swiftSettings: swiftSettings)
+            cSettings: [
+                .define("GRDB_SQLITE_ENABLE_PREUPDATE_HOOK")
+            ],
+            swiftSettings: [
+                .define("SQLITE_ENABLE_FTS5")
+            ])
     ],
     swiftLanguageVersions: [.v5]
 )
